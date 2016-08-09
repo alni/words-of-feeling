@@ -1,0 +1,24 @@
+{
+    "author": "alexander.nilsen.no@gmail.com",
+    "dependencies": {},
+    "keywords": [],
+    "name": "words-of-feeling",
+    "pebble": {
+        "capabilities": [
+            ""
+        ],
+        "displayName": "Words of Feeling",
+        "enableMultiJS": true,
+        "messageKeys": [],
+        "projectType": "native",
+        "resources": {
+            "media": []
+        },
+        "sdkVersion": "3",
+        "uuid": "4d47f5d7-721e-41f9-b106-bb8f3f4f155b",
+        "watchapp": {
+            "watchface": false
+        }
+    },
+    "version": "1.0.0"
+}
