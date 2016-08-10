@@ -1,12 +1,12 @@
 # Words of Feeling for Pebble
 
-Implements the "Feeling Wheel" in an easy-to-navigate menu.
+Implements the "Feelings Wheel" in an easy-to-navigate menu.
 
 
 
 ## References ##
 
-### Feeling Wheel ###
+### Feelings Wheel ###
 
 <img src="https://i.kinja-img.com/gawker-media/image/upload/s--4K5Ls2lC--/c_scale,fl_progressive,q_80,w_800/lsqu8qcp7nkg4w5xz7qy.jpg" width="480px">
 
