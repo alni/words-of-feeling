@@ -11,7 +11,7 @@ Feeling feelings[6] = {
   }, {
     .text = "Happy",
   }, {
-    .text = "Suprise",
+    .text = "Surprise",
   }, {
     .text = "Fear",
   }

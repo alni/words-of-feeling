@@ -4,7 +4,7 @@
 #include "feelings/disgust.h"
 #include "feelings/sad.h"
 #include "feelings/happy.h"
-#include "feelings/suprise.h"
+#include "feelings/surprise.h"
 #include "feelings/fear.h"
 
 static Window *s_main_window;
@@ -29,8 +29,8 @@ static uint16_t get_num_rows_callback(MenuLayer *menu_layer, uint16_t section_in
       return SAD_FEELING_NUM;
     case HAPPY_FEELING_INDEX:
       return HAPPY_FEELING_NUM;
-    case SUPRISE_FEELING_INDEX:
-      return SUPRISE_FEELING_NUM;
+    case SURPRISE_FEELING_INDEX:
+      return SURPRISE_FEELING_NUM;
     case FEAR_FEELING_INDEX:
       return FEAR_FEELING_NUM;
     default:
@@ -41,62 +41,71 @@ static uint16_t get_num_rows_callback(MenuLayer *menu_layer, uint16_t section_in
 
 static void draw_row_callback(GContext *ctx, const Layer *cell_layer, MenuIndex *cell_index, void *context) {
   static Feeling curr_feelings;
+  bool feeling_found = false;
   //menu_cell_basic_draw(ctx, cell_layer, feelings[cell_index->row].text, NULL, NULL);
   if (s_sub_menu_index > -1) {
-    Feeling *sub_feelings;
+    Feeling *sub_feelings = NULL;
     switch (s_menu_index) {
       case ANGER_FEELING_INDEX:
         sub_feelings = feelings_get_anger(s_sub_menu_index);
         break;
-      default:
-        sub_feelings = feelings_get_anger(s_sub_menu_index);
-        break;
-      /*case DISGUST_FEELING_INDEX:
-        //curr_feelings = disgust_feelings[cell_index->row];
+      case DISGUST_FEELING_INDEX:
+        sub_feelings = feelings_get_disgust(s_sub_menu_index);
         break;
       case SAD_FEELING_INDEX:
-        //curr_feelings = sad_feelings[cell_index->row];
+        sub_feelings = feelings_get_sad(s_sub_menu_index);
         break;
       case HAPPY_FEELING_INDEX:
-        //curr_feelings = happy_feelings[cell_index->row];
+        sub_feelings = feelings_get_happy(s_sub_menu_index);
         break;
-      case SUPRISE_FEELING_INDEX:
-        //curr_feelings = suprise_feelings[cell_index->row];
+      case SURPRISE_FEELING_INDEX:
+        sub_feelings = feelings_get_surprise(s_sub_menu_index);
         break;
       case FEAR_FEELING_INDEX:
-        //curr_feelings = fear_feelings[cell_index->row];
+        sub_feelings = feelings_get_fear(s_sub_menu_index);
         break;
       default:
-        curr_feelings = feelings[cell_index->row];
-        break;*/
+        break;
     }
-    curr_feelings = sub_feelings[cell_index->row];
+    if (sub_feelings != NULL) {
+      curr_feelings = sub_feelings[cell_index->row];
+      feeling_found = true;
+    }
   } else {
     switch (s_menu_index) {
       case ANGER_FEELING_INDEX:
         curr_feelings = anger_feelings[cell_index->row];
+        feeling_found = true;
         break;
       case DISGUST_FEELING_INDEX:
-        //curr_feelings = disgust_feelings[cell_index->row];
+        curr_feelings = disgust_feelings[cell_index->row];
+        feeling_found = true;
         break;
       case SAD_FEELING_INDEX:
-        //curr_feelings = sad_feelings[cell_index->row];
+        curr_feelings = sad_feelings[cell_index->row];
+        feeling_found = true;
         break;
       case HAPPY_FEELING_INDEX:
-        //curr_feelings = happy_feelings[cell_index->row];
+        curr_feelings = happy_feelings[cell_index->row];
+        feeling_found = true;
         break;
-      case SUPRISE_FEELING_INDEX:
-        //curr_feelings = suprise_feelings[cell_index->row];
+      case SURPRISE_FEELING_INDEX:
+        curr_feelings = surprise_feelings[cell_index->row];
+        feeling_found = true;
         break;
       case FEAR_FEELING_INDEX:
-        //curr_feelings = fear_feelings[cell_index->row];
+        curr_feelings = fear_feelings[cell_index->row];
+        feeling_found = true;
         break;
       default:
         curr_feelings = feelings[cell_index->row];
+        feeling_found = true;
         break;
     }
   }
-  menu_cell_basic_draw(ctx, cell_layer, curr_feelings.text, NULL, NULL);
+  if (feeling_found) {
+    menu_cell_basic_draw(ctx, cell_layer, curr_feelings.text, NULL, NULL);
+  }
   /*switch(cell_index->row) {
     case 0:
       menu_cell_basic_draw(ctx, cell_layer, "Checkbox List", NULL, NULL);
