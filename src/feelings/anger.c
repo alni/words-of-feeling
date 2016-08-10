@@ -92,3 +92,27 @@ Feeling anger_feelings[ANGER_FEELING_NUM] = {
     //.items = critical_feeling
   }
 };
+
+
+Feeling* feelings_get_anger(int feeling_index) {
+  switch (feeling_index) {
+    case HURT_FEELING_INDEX:
+      return hurt_feeling;
+    case THREATENED_FEELING_INDEX:
+      return threatened_feeling;
+    case HATEFUL_FEELING_INDEX:
+      return hateful_feeling;
+    case MAD_FEELING_INDEX:
+      return mad_feeling;
+    case AGGRESSIVE_FEELING_INDEX:
+      return aggressive_feeling;
+    case FRUSTRATED_FEELING_INDEX:
+      return frustrated_feeling;
+    case DISTANT_FEELING_INDEX:
+      return distant_feeling;
+    case CRITICAL_FEELING_INDEX:
+      return critical_feeling;
+    default:
+      return NULL;
+  }
+}

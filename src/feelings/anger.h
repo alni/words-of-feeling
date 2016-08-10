@@ -30,3 +30,5 @@ extern Feeling distant_feeling[INNERMOST_FEELING_NUM];
 extern Feeling critical_feeling[INNERMOST_FEELING_NUM];
 
 extern Feeling anger_feelings[ANGER_FEELING_NUM];
+
+Feeling* feelings_get_anger(int feeling_index);

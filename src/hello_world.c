@@ -12,11 +12,14 @@ static Window *s_main_window;
 static MenuLayer *s_menu_layer;
 
 static int s_menu_index = -1;
-//static int s_sub_menu_index = -1;
+static int s_sub_menu_index = -1;
 
 static uint16_t get_num_rows_callback(MenuLayer *menu_layer, uint16_t section_index, void *context) {
   //return NUM_WINDOWS;
   //return 8;
+  if (s_sub_menu_index > -1) {
+    return INNERMOST_FEELING_NUM;
+  }
   switch (s_menu_index) {
     case ANGER_FEELING_INDEX:
       return ANGER_FEELING_NUM;
@@ -39,28 +42,59 @@ static uint16_t get_num_rows_callback(MenuLayer *menu_layer, uint16_t section_in
 static void draw_row_callback(GContext *ctx, const Layer *cell_layer, MenuIndex *cell_index, void *context) {
   static Feeling curr_feelings;
   //menu_cell_basic_draw(ctx, cell_layer, feelings[cell_index->row].text, NULL, NULL);
-  switch (s_menu_index) {
-    case ANGER_FEELING_INDEX:
-      curr_feelings = anger_feelings[cell_index->row];
-      break;
-    case DISGUST_FEELING_INDEX:
-      //curr_feelings = disgust_feelings[cell_index->row];
-      break;
-    case SAD_FEELING_INDEX:
-      //curr_feelings = sad_feelings[cell_index->row];
-      break;
-    case HAPPY_FEELING_INDEX:
-      //curr_feelings = happy_feelings[cell_index->row];
-      break;
-    case SUPRISE_FEELING_INDEX:
-      //curr_feelings = suprise_feelings[cell_index->row];
-      break;
-    case FEAR_FEELING_INDEX:
-      //curr_feelings = fear_feelings[cell_index->row];
-      break;
-    default:
-      curr_feelings = feelings[cell_index->row];
-      break;
+  if (s_sub_menu_index > -1) {
+    Feeling *sub_feelings;
+    switch (s_menu_index) {
+      case ANGER_FEELING_INDEX:
+        sub_feelings = feelings_get_anger(s_sub_menu_index);
+        break;
+      default:
+        sub_feelings = feelings_get_anger(s_sub_menu_index);
+        break;
+      /*case DISGUST_FEELING_INDEX:
+        //curr_feelings = disgust_feelings[cell_index->row];
+        break;
+      case SAD_FEELING_INDEX:
+        //curr_feelings = sad_feelings[cell_index->row];
+        break;
+      case HAPPY_FEELING_INDEX:
+        //curr_feelings = happy_feelings[cell_index->row];
+        break;
+      case SUPRISE_FEELING_INDEX:
+        //curr_feelings = suprise_feelings[cell_index->row];
+        break;
+      case FEAR_FEELING_INDEX:
+        //curr_feelings = fear_feelings[cell_index->row];
+        break;
+      default:
+        curr_feelings = feelings[cell_index->row];
+        break;*/
+    }
+    curr_feelings = sub_feelings[cell_index->row];
+  } else {
+    switch (s_menu_index) {
+      case ANGER_FEELING_INDEX:
+        curr_feelings = anger_feelings[cell_index->row];
+        break;
+      case DISGUST_FEELING_INDEX:
+        //curr_feelings = disgust_feelings[cell_index->row];
+        break;
+      case SAD_FEELING_INDEX:
+        //curr_feelings = sad_feelings[cell_index->row];
+        break;
+      case HAPPY_FEELING_INDEX:
+        //curr_feelings = happy_feelings[cell_index->row];
+        break;
+      case SUPRISE_FEELING_INDEX:
+        //curr_feelings = suprise_feelings[cell_index->row];
+        break;
+      case FEAR_FEELING_INDEX:
+        //curr_feelings = fear_feelings[cell_index->row];
+        break;
+      default:
+        curr_feelings = feelings[cell_index->row];
+        break;
+    }
   }
   menu_cell_basic_draw(ctx, cell_layer, curr_feelings.text, NULL, NULL);
   /*switch(cell_index->row) {
@@ -112,7 +146,12 @@ static int16_t get_cell_height_callback(struct MenuLayer *menu_layer, MenuIndex 
 }*/
 
 static void select_callback(struct MenuLayer *menu_layer, MenuIndex *cell_index, void *context) {
-  s_menu_index = cell_index->row;
+  if (s_menu_index == -1) {
+    s_menu_index = cell_index->row;
+  } else if (s_sub_menu_index == -1) {
+    s_sub_menu_index = cell_index->row;
+  }
+  //s_menu_index = cell_index->row;
   menu_layer_reload_data(menu_layer);
   /*switch(cell_index->row) {
     case 0:
@@ -157,12 +196,16 @@ static void select_callback(struct MenuLayer *menu_layer, MenuIndex *cell_index,
 // Define what you want to do when the back button is pressed
 void back_button_handler(ClickRecognizerRef recognizer, void *context) {
   APP_LOG(APP_LOG_LEVEL_DEBUG, "back clicked");
-  
-  if (s_menu_index > -1) {
+  if (s_sub_menu_index > -1) {
+    s_sub_menu_index = -1;
+    menu_layer_reload_data(s_menu_layer);
+  } else if (s_menu_index > -1) {
     s_menu_index = -1;
     menu_layer_reload_data(s_menu_layer);
   } else {
-    
+    // We are at the top-most feeling menu. We assume that the user want to
+    // exit the app.
+    window_stack_pop_all(true); // Pop all windows (this will exit the app)
   }
 }
 
