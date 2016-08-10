@@ -13,6 +13,7 @@ static MenuLayer *s_menu_layer;
 
 static int s_menu_index = -1;
 static int s_sub_menu_index = -1;
+static uint16_t s_menu_selected_row = 0;
 
 static uint16_t get_num_rows_callback(MenuLayer *menu_layer, uint16_t section_index, void *context) {
   //return NUM_WINDOWS;
@@ -154,12 +155,24 @@ static int16_t get_cell_height_callback(struct MenuLayer *menu_layer, MenuIndex 
   pin_window_pop((PinWindow*)context, true);
 }*/
 
+static void menu_set_selected_item(MenuLayer *menu_layer, uint16_t index) {
+  menu_layer_set_selected_index(menu_layer, (MenuIndex) {
+      .row = index
+    }, MenuRowAlignCenter, false);
+}
+
 static void select_callback(struct MenuLayer *menu_layer, MenuIndex *cell_index, void *context) {
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "Menu Row Selected Index = %d", cell_index->row);
   if (s_menu_index == -1) {
     s_menu_index = cell_index->row;
   } else if (s_sub_menu_index == -1) {
     s_sub_menu_index = cell_index->row;
   }
+  // When going to the next sub-menu always select the first item
+  menu_set_selected_item(menu_layer, 0);
+  /*menu_layer_set_selected_index(menu_layer, (MenuIndex) {
+    .row = 0
+  }, MenuRowAlignCenter, false);*/
   //s_menu_index = cell_index->row;
   menu_layer_reload_data(menu_layer);
   /*switch(cell_index->row) {
@@ -206,11 +219,22 @@ static void select_callback(struct MenuLayer *menu_layer, MenuIndex *cell_index,
 void back_button_handler(ClickRecognizerRef recognizer, void *context) {
   APP_LOG(APP_LOG_LEVEL_DEBUG, "back clicked");
   if (s_sub_menu_index > -1) {
+    // When going back to the previous sub-menu (parent) always select the
+    // parent item
+    s_menu_selected_row = s_sub_menu_index + 0;
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "Sub Menu Index = %d", s_sub_menu_index);
     s_sub_menu_index = -1;
     menu_layer_reload_data(s_menu_layer);
+    menu_set_selected_item(s_menu_layer, s_menu_selected_row);
+    
   } else if (s_menu_index > -1) {
+    // When going back to the previous sub-menu (parent) always select the
+    // parent item
+    s_menu_selected_row = s_menu_index + 0;
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "Menu Index = %d", s_menu_index);
     s_menu_index = -1;
     menu_layer_reload_data(s_menu_layer);
+    menu_set_selected_item(s_menu_layer, s_menu_selected_row);
   } else {
     // We are at the top-most feeling menu. We assume that the user want to
     // exit the app.
